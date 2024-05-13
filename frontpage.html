@@ -5,12 +5,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>k-means explainer</title>
-    <link rel="stylesheet" href="./style.css">
-    <link rel="icon" href="./favicon.ico" type="image/x-icon">
-    <script src="index.js"></script>
+    <script src="k_means.js"></script>
   </head>
   <body>
     <label for="clusterfile">Kies bestand da geclusterd moet worden:</label>
-    <input type="file" id="clusterfile" name="clusterfile"/>
+    <input type="file" id="clusterfile" name="clusterfile"/><br/>
+    <label for="clusters"> aantal clusters:</label>
+    <input type="number" id="clusters" name="clusters" min="1" max="100" step="1", value="5"><br/>
+    <button onclick="getFileoutput()">calculate clustering</button>
+    <div id="fileoutput"></div>
   </body>
 </html>
