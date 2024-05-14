@@ -45,6 +45,7 @@ function visualiseKMeans(centroids, clusters, points, centroid_evolution, cluste
             },
             name: 'Cluster ' + i,
             // Hier uitleg waarom de punten in de cluster zitten --> misschien ook een berekening doen?
+            // https://plotly.com/javascript/hover-text-and-formatting/
             text: clusterPoints.map(() => 'This point is assigned to cluster <b>' + i + '</b> because it is closest to the centroid of this cluster.'),
             hoverinfo: 'text'
         });
