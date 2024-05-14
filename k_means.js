@@ -13,6 +13,8 @@ function getFileoutput(){
 
             let centroids, cluster, centroid_evolution, cluster_evolution, dist;
             [centroids, cluster, centroid_evolution, cluster_evolution, dist] = kmeans(points);
+            console.log(centroid_evolution);
+            visualiseKMeans(centroids, cluster, points, centroid_evolution, cluster_evolution);
             outputfield.innerHTML += dist;
             outputfield.innerHTML += "<br/>";
         };
@@ -21,6 +23,99 @@ function getFileoutput(){
     }else{
         outputfield.innerHTML = "file couldn't be read";
     }
+}
+
+function visualiseKMeans(centroids, clusters, points, centroid_evolution, cluster_evolution){
+    const amount_clusters = document.getElementById("clusters").value;
+
+    // Generate a color scale
+    var color = d3.scaleSequential(d3.interpolateSinebow).domain([0, amount_clusters]);
+
+    // Prepare the datasets
+    var data = [];
+    for (var i = 0; i < amount_clusters; i++) {
+        var clusterPoints = points.filter((_, index) => clusters[index] === i);
+        data.push({
+            x: clusterPoints.map(point => point[0]),
+            y: clusterPoints.map(point => point[1]),
+            mode: 'markers',
+            marker: {
+            color: color(i),
+            size: 8
+            },
+            name: 'Cluster ' + i,
+            // Hier uitleg waarom de punten in de cluster zitten --> misschien ook een berekening doen?
+            text: clusterPoints.map(() => 'This point is assigned to cluster <b>' + i + '</b> because it is closest to the centroid of this cluster.'),
+            hoverinfo: 'text'
+        });
+    }
+
+    // Add the centroids to the datasets
+    for (var i = 0; i < centroids.length; i++) {
+        data.push({
+            x: [centroids[i][0]],
+            y: [centroids[i][1]],
+            mode: 'markers',
+            marker: {
+            color: color(i),
+            size: 12,
+            line: {
+                color: 'black',
+                width: 2
+            }
+            },
+            name: 'Centroid ' + i,
+            hoverinfo: 'name'
+        });
+    }
+
+    // Add the centroid evolution to the datasets
+    for (var i = 0; i < amount_clusters; i++) { 
+        data.push({
+            x: centroid_evolution.map(iteration => iteration[i][0]),
+            y: centroid_evolution.map(iteration => iteration[i][1]),
+            mode: 'lines+markers',
+            marker: {
+                color: color(i),
+                size: 4,
+                line: {
+                    color: 'rgba(0, 0, 0, 0.75)',
+                    width: 1
+                }
+            },
+            line: {
+                color: 'rgba(0, 0, 0, 0.60)',
+                width: 2
+            },
+            name: 'Centroid evolution ' + i,
+            hoverinfo: 'name'
+        })
+    }
+
+    var width = window.innerWidth || document.documentElement.clientWidth || document.body.clientWidth;
+
+    // Create the plot
+    Plotly.newPlot('chartKmeans', data, {
+        title: 'K-means clustering',
+        xaxis: {
+            showticklabels: false,
+            showgrid: false,
+            zeroline: false
+        },
+        yaxis: {
+            showticklabels: false,
+            showgrid: false,
+            zeroline: false
+        },
+        autosize: false,
+        width: width/1.1,
+        height: width/2
+    });
+
+    // On click (misschien makkelijker dan de on hover)
+    document.getElementById('chartKmeans').on('plotly_click', function(data){
+        console.log(data);
+    });
 }
 
 function split_file_in_coordinates(fileContent){
@@ -77,7 +172,7 @@ function calc_cluster_centroid(points, cluster_distribution, amount_clusters){
         for(let j = 0; j < points[0].length; j++){//initialize total_point
             total_point.push(0.0);
         }
-        console.log(points);
+        //console.log(points);
         let amount_points = 0;
         for(let j = 0; j < points.length; j++){// search through point, which belong to current cluster
             if(cluster_distribution[j] == i){

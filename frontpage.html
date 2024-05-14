@@ -5,14 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>k-means explainer</title>
+    <script src="https://d3js.org/d3.v5.min.js"></script>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
     <script src="k_means.js"></script>
   </head>
   <body>
-    <label for="clusterfile">Kies bestand da geclusterd moet worden:</label>
+    <label for="clusterfile">Kies bestand dat geclusterd moet worden:</label>
     <input type="file" id="clusterfile" name="clusterfile"/><br/>
     <label for="clusters"> aantal clusters:</label>
-    <input type="number" id="clusters" name="clusters" min="1" max="100" step="1", value="5"><br/>
+    <input type="number" id="clusters" name="clusters" min="1" max="20" step="1", value="5"><br/>
     <button onclick="getFileoutput()">calculate clustering</button>
     <div id="fileoutput"></div>
+    <div id="chartKmeans"></div>
   </body>
 </html>
