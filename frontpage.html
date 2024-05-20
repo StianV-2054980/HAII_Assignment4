@@ -15,6 +15,8 @@
     <label for="clusters"> aantal clusters:</label>
     <input type="number" id="clusters" name="clusters" min="1" max="20" step="1", value="5"><br/>
     <button onclick="getFileoutput()">calculate clustering</button>
+    <button onclick="explainPoint(10)"> Explain point </button>
+    <div id="pointExplanation"></div>
     <div id="fileoutput"></div>
     <div id="chartKmeans"></div>
   </body>

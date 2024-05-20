@@ -1,4 +1,64 @@
 let fileContents;
+let points, centroids, cluster, centroid_evolution, cluster_evolution, dist;
+let highlightedPoint = null;
+let color;
+
+function getIndexOfPoint(X, Y){
+    for (let i = 0; i < points.length;i++){
+        let point = points[i];
+        if (point[0] == X && point[1] == Y){
+            return i;
+        }
+    }
+    return -1;
+}
+
+function explainPoint(X, Y){
+    let index = getIndexOfPoint(X, Y);
+    let pastClusters = [];
+    for (let i =0; i < cluster_evolution.length;i++){
+        let clusterAffiliation = cluster_evolution[i][index];
+        if (pastClusters.indexOf(clusterAffiliation) == -1){
+            pastClusters.push(clusterAffiliation);
+        }
+    }
+    let explanation = "";
+    if (pastClusters.length == 1){
+        explanation += "This point only belonged to one cluster previously, namely " + cluster[index] + ".<br>";
+        explanation+= "This may be a sign of a stable assignment, but doesn't have to be.<br>";
+    }
+    else {
+        explanation += "There are " + pastClusters.length + " clusters this point belonged to previously. The more clusters relative to the total amount, the less stable the point assignment is\n. ";
+        explanation += "The clusters were: " + String(pastClusters) + " and the final cluster was " + String(cluster[index]) + ".<br>";
+        
+    }
+    explanation += "Kmeans is an algorithm that heavily depends on the initial values of the centroids and may not always deliver optimal results.<br>"
+    explanation += "If this point is not assigned to the cluster you expect/want, you can influence this decision by picking different start values for the centroids.<br>";
+    document.getElementById("pointExplanation").innerHTML=explanation;
+    //highlightPoint(X, Y, index);
+}
+
+
+function highlightPoint(X, Y, index){
+    let point = fileContents[index];
+    Plotly.restyle("chartKmeans",'marker.color', [['black']], [index]);
+    if (highlightedPoint != null){
+        let affiliation = cluster[index];
+        Plotly.addTraces("chartKmeans",{
+            x: highlightPoint[0],
+            y: highlightedPoint[1],
+            type: 'scatter',
+            mode: 'markers',
+            marker: {
+            'color': color(affiliation)
+            }
+          });
+    }
+    highlightedPoint = [X, Y, index];
+    console.log(point);
+    console.log(X);
+    console.log(Y);
+}
 
 function getFileoutput(){
     let outputfield = document.getElementById("fileoutput");
@@ -9,9 +69,7 @@ function getFileoutput(){
 
         reader.onload = function(event){
             fileContents = event.target.result;
-            const points = split_file_in_coordinates(fileContents);
-
-            let centroids, cluster, centroid_evolution, cluster_evolution, dist;
+            points = split_file_in_coordinates(fileContents);
             [centroids, cluster, centroid_evolution, cluster_evolution, dist] = kmeans(points);
             console.log(centroid_evolution);
             visualiseKMeans(centroids, cluster, points, centroid_evolution, cluster_evolution);
@@ -29,7 +87,7 @@ function visualiseKMeans(centroids, clusters, points, centroid_evolution, cluste
     const amount_clusters = document.getElementById("clusters").value;
 
     // Generate a color scale
-    var color = d3.scaleSequential(d3.interpolateSinebow).domain([0, amount_clusters]);
+    color = d3.scaleSequential(d3.interpolateSinebow).domain([0, amount_clusters]);
 
     // Prepare the datasets
     var data = [];
@@ -116,6 +174,10 @@ function visualiseKMeans(centroids, clusters, points, centroid_evolution, cluste
     // On click (misschien makkelijker dan de on hover)
     document.getElementById('chartKmeans').on('plotly_click', function(data){
         console.log(data);
+        let point = data.points[0];
+        let X = point.x;
+        let Y = point.y;
+        explainPoint(X, Y);
     });
 }
 
