@@ -171,13 +171,42 @@ function visualiseKMeans(centroids, clusters, points, centroid_evolution, cluste
         height: width/2
     });
 
-    // On click (misschien makkelijker dan de on hover)
+    // Keep track of the last added trace
+    var lastAddedTraceIndex = null;
     document.getElementById('chartKmeans').on('plotly_click', function(data){
         console.log(data);
         let point = data.points[0];
         let X = point.x;
         let Y = point.y;
         explainPoint(X, Y);
+
+        // If a trace was added before, remove it
+        if (lastAddedTraceIndex !== null) {
+            Plotly.deleteTraces('chartKmeans', lastAddedTraceIndex);
+        }
+
+        // Create a new trace for the clicked point
+        var newTrace = {
+            x: [X],
+            y: [Y],
+            mode: 'markers',
+            marker: {
+                color: 'red',  // change color to red
+                size: 12,
+                line: {
+                    color: 'black',
+                    width: 2
+                }
+            },
+            name: 'Clicked Point',
+            hoverinfo: 'name'
+        };
+
+        // Add the new trace to the plot
+        Plotly.addTraces('chartKmeans', newTrace);
+
+        // Update the index of the last added trace
+        lastAddedTraceIndex = document.getElementById('chartKmeans').data.length - 1;
     });
 }
 
