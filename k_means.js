@@ -28,12 +28,14 @@ function explainPoint(X, Y){
         explanation+= "This may be a sign of a stable assignment, but doesn't have to be.<br>";
     }
     else {
-        explanation += "There are " + pastClusters.length + " clusters this point belonged to previously. The more clusters relative to the total amount, the less stable the point assignment is\n. ";
+        explanation += "There are " + pastClusters.length + " clusters this point belonged to previously. Usually the more clusters relative to the total amount, the less stable the point assignment is\n. ";
         explanation += "The clusters were: " + String(pastClusters) + " and the final cluster was " + String(cluster[index]) + ".<br>";
         
     }
     explanation += "Kmeans is an algorithm that heavily depends on the initial values of the centroids and may not always deliver optimal results.<br>"
+    explanation += "The amount of clusters also influences results heavily, too many or too little clusters usually gives poor results. <br>"
     explanation += "If this point is not assigned to the cluster you expect/want, you can influence this decision by picking different start values for the centroids.<br>";
+    explanation += "Calculate the clusters again to execute the algorithm with random start values. <br>"
     document.getElementById("pointExplanation").innerHTML=explanation;
     //highlightPoint(X, Y, index);
 }
